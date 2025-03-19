@@ -1,18 +1,16 @@
-import torch
-import matplotlib.pyplot as plt
-import numpy as np
-from vis_utils import *
-import plotly.graph_objects as go
-from jax_utils import *
 import jax.numpy as jnp
+import numpy as np
 import time
-from jax_utils_3d import *
+
 #all for vis
 import open3d as o3d
 import wandb
 import pickle
 import argparse
 
+from jax_utils import *
+from jax_utils_3d import *
+from vis_utils import *
 
 def hough(x, y):
    n = (x-y) / jnp.linalg.norm(x - y)
@@ -37,8 +35,8 @@ def main(args):
         "sigma": jnp.ones((n_steps,)) * sigma
     }
     
-    log_name = f"{data_name}/{num_samples}-{sigma}"
-    wandb.init(project="symmetry-sweep", name=log_name, entity="xnf")
+    #log_name = f"{data_name}/{num_samples}-{sigma}"
+    #wandb.init(project="symmetry-sweep", name=log_name, entity="xnf")
     
     
     key = random.PRNGKey(0)
@@ -53,17 +51,13 @@ def main(args):
     p1 = jnp.array(mesh.sample_points_uniformly(num_samples).points)
     p2 = jnp.array(mesh.sample_points_uniformly(num_samples).points)
 
-    #d, n, p, m = hough_transform_3d(torch.tensor(p1), torch.tensor(p2))    #(4, n_samples)
-    #n_times_d = n * (d + np.sign(d))[:, np.newaxis] #(n_samples, 3)  
-    #n_times_d= jnp.array(n_times_d)
-    mask = jnp.linalg.norm(p1 - p2) > 1e-8
     ns, ds = hough_vec(p1, p2)
     n_times_d = ns * (ds + np.sign(ds))[:, np.newaxis] #(n_samples, 3)  
     n_times_d= jnp.array(n_times_d)
     to_plot = create_points_3d(n_times_d)
 
-    wandb.log({"hough space": plot_all_3d([to_plot])})
-    wandb.log({"density": vis_density(100, n_times_d, sigma=sigma, bs=100) })
+    #wandb.log({"hough space": plot_all_3d([to_plot])})
+    #wandb.log({"density": vis_density(100, n_times_d, sigma=sigma, bs=100) })
     #save_pc('hough space', n_times_d)
 
     def langevin_step(x, step_stats):
@@ -116,13 +110,13 @@ def main(args):
     #print("total number of modes found: " + str(len(centroids)))
     
     #all_points = create_points_3d(p1, alpha = 0.05, label = 'primal')
-    hough = create_points_3d(n_times_d, alpha = 0.05, label = 'dual')
-    start = create_points_3d(xt[0], alpha = 1, label = 'initial timestep')
-    end = create_points_3d(xt[-1], alpha = 1, markersize = 4, label = 'final timestep')
+    #hough = create_points_3d(n_times_d, alpha = 0.05, label = 'dual')
+    #start = create_points_3d(xt[0], alpha = 1, label = 'initial timestep')
+    #end = create_points_3d(xt[-1], alpha = 1, markersize = 4, label = 'final timestep')
 
     
-    wandb.log({"langevin": plot_all_3d([hough, start, end], grid = False)})
-    fpath = f"{args.output}/{data_name}_{num_samples}_{sigma}_modes.pickle"
+    #wandb.log({"langevin": plot_all_3d([hough, start, end], grid = False)})
+    fpath = f"{args.out_path}/{data_name}_{num_samples}_{sigma}_modes.pickle"
     with open(fpath,'wb') as f:
         pickle.dump(last, f)
     
@@ -133,7 +127,7 @@ if __name__ == "__main__":
     parser.add_argument("--n_steps", type=int, default=10_000)
     parser.add_argument("--n_points", type=int, default=100)
     parser.add_argument("--sigma", type=float, default=0.1)
-    parser.add_argument("--output", type=str, default='/hdd/jihyeonj/langevin/out/air')
+    parser.add_argument("--out_path", type=str, default='/hdd/jihyeonj/langevin/out/air')
     parser.add_argument("--data_path", type=str, default='/hdd/jihyeonj/langevin/model_watertight.off')
     args = parser.parse_args()
     main(args)

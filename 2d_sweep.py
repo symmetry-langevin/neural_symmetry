@@ -1,18 +1,15 @@
-# !export CUDA_VISIBLE_DEVICES=0
+import jax
+import jax.numpy as jnp
+
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
 from functools import partial
 import torch
 import wandb
 import pickle
-import time
 import os
 from tqdm import tqdm
-from io import BytesIO
-import imageio
-import jax
-import jax.numpy as jnp
-import cv2
 import argparse
 
 from jax_utils import *
@@ -36,20 +33,18 @@ def hough_transform_batch_2d_change(p1, p2, eps1 = 1e-7, eps2 = 1e-2): #outputti
 
 def batch_run(args):
     data_dir = args.data_path
-    num_skip = args.num_skip
-    num_runs = args.num_runs
     n_steps = args.n_steps
     sigma = args.sigma
     num_points = args.n_points
     step_size = args.step_size
 
-    log_name = f"{data_dir}/{num_skip}-{num_skip+num_runs}-{num_points}-{n_steps}-{step_size}-{sigma}"
-    wandb.init(project="2d_langevin_sweep", name=log_name, entity="xnf")
+    #log_name = f"{data_dir}/2d_langevin-{num_points}-{n_steps}-{step_size}-{sigma}"
+    #wandb.init(project="2d_langevin_sweep", name=log_name, entity="xnf")
 
     files = os.listdir(data_dir)
     files.sort()
-    files = round_robin_sort(files)
-    for file in files[num_skip:num_skip+num_runs]:
+    #files = round_robin_sort(files)
+    for file in files:
         file_path = os.path.join(data_dir, file)
         main(args, file_path)
 
@@ -208,8 +203,6 @@ if __name__ == "__main__":
     
     parser.add_argument("--data_path", type=str, default='./temp_test/shapes')
     parser.add_argument("--out_path", type=str, default= './temp_test/output')
-    parser.add_argument("--num_runs", type=int, default=1)
-    parser.add_argument("--num_skip", type=int, default=0)
     parser.add_argument("--gen_vid", type=bool, default=False)
     
     args = parser.parse_args()

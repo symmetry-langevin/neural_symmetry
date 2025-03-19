@@ -20,14 +20,8 @@ Modifying each of these parameters will impact the langevin walk result. We sugg
 
 ```bash
 # see the lits of arguments for more detail
-python 2d_sweep.py --sigma SIGMA --R R --stepe_size STEP --n_steps num_steps --n_samples num_initial_samples --n_points num_noise_points
-python 3d_sweep.py --sigma [0.1,0.08,0.05,0.03] --n_samples 1_000_000 --n_steps [10_000, 30_000, 60_000] --output OUTPUTPATH --data_path DATAPATH
-```
-
-### Or, if you directly know which parameters to use: 
-```bash
-python 2d_langevin.py --data_path ./temp_test/shapes --out_path ./temp_test/output --num_runs 1 --num_skip 0 --gen_vid True --step_size 0.06 --sigma 0.025
-python 3d_sweep.py --sigma 0.08 --n_samples 1_000_000 --n_steps 10_000 --output OUTPUTPATH --data_path DATAPATH
+python 2d_sweep.py --sigma 0.15 --R 0.5 --n_steps 100_000 --n_samples 10_000 --n_points 100 --out_path OUTPUTPATH --data_path DATAPATH
+python 3d_sweep.py --sigma 0.08 --n_samples 1_000_000 --n_steps 10_000 --n_points 100 --out_path OUTPUTPATH --data_path DATAPATH
 ```
 
 ## Visualization
