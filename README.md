@@ -29,7 +29,6 @@ python 3d_sweep.py --sigma [0.1,0.08,0.05,0.03] --n_samples 1_000_000 --n_steps 
 python 2d_langevin.py --data_path ./temp_test/shapes --out_path ./temp_test/output --num_runs 1 --num_skip 0 --gen_vid True --step_size 0.06 --sigma 0.025
 python 3d_sweep.py --sigma 0.08 --n_samples 1_000_000 --n_steps 10_000 --output OUTPUTPATH --data_path DATAPATH
 ```
-<img src="sample_figures/traj.gif">
 
 ## Running Blender visualization
 If you want to visualize the output of the Langevin dynamics, please see the visualization notebook:
