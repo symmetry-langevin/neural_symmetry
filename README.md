@@ -30,7 +30,7 @@ python 2d_langevin.py --data_path ./temp_test/shapes --out_path ./temp_test/outp
 python 3d_sweep.py --sigma 0.08 --n_samples 1_000_000 --n_steps 10_000 --output OUTPUTPATH --data_path DATAPATH
 ```
 
-## Running Blender visualization
+## Visualization
 If you want to visualize the output of the Langevin dynamics, please see the visualization notebook:
 ```
 visualize_3d_planes.ipynb
