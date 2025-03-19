@@ -1,4 +1,4 @@
-## Robust Symmetry Detection with Riemannian Langevin Dynamics
+## Robust Symmetry Detection via Riemannian Langevin Dynamics
 ### SIGGRAPH ASIA 2024 [[📖 Paper](https://arxiv.org/abs/2410.02786)] [[🚀 Project Page](https://symmetry-langevin.github.io/)] [[⭐ Colab Demo](https://colab.research.google.com/drive/1mzytIuqjgIj2D_K3VTt-qhMtluVdVBGg?usp=sharing)] 
 > #### Authors &emsp;&emsp; [Jihyeon Je](https://jihyeonje.com/)<sup>1*</sup>, [Jiayi Liu]()<sup>1*</sup>, [Guandao Yang](https://www.guandaoyang.com/)<sup>1*</sup>, [Boyang Deng](https://boyangdeng.com/)<sup>1*</sup>, [Shengqu Cai](https://primecai.github.io/)<sup>1</sup>, [Gordon Wetzstein](https://stanford.edu/~gordonwz/)<sup>1</sup>, [Or Litany](https://orlitany.github.io/)<sup>2</sup>, [Leonidas Guibas](https://geometry.stanford.edu/)<sup>1</sup> <br> <sub> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <sup>1</sup>Stanford University, <sup>2</sup>Technion </sub><br><br>
 
