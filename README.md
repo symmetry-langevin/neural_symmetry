@@ -8,8 +8,8 @@
 ## Setup
 First, download and set up the repo:
 ```bash
-git clone https://github.com/Jihyeon-Je/neural-symmetry.git
-cd neural-symmetry
+git clone https://github.com/symmetry-langevin/neural_symmetry.git
+cd neural_symmetry
 ```
 You will also need to install Jax, open3d, trimesh, as well as Blender for visualization.
 
@@ -25,6 +25,8 @@ python 3d_sweep.py --sigma 0.1 --n_samples 100_000 --n_steps 10_000 --n_points 1
 ```
 
 ## Visualization
+**More visualization code coming soon!
+
 If you want to visualize the output of the Langevin dynamics, please see the visualization notebook:
 ```
 visualize_3d_planes.ipynb
