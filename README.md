@@ -15,7 +15,7 @@ You will also need to install Jax, open3d, trimesh, as well as Blender for visua
 
 
 
-## Running parameter sweep for langevin
+## Running Langevin dynamics 
 Modifying each of these parameters will impact the langevin walk result. We suggest that you tune sigma, n_samples, and n_steps depending on compute resource / data (Generally, larger n_samples, n_steps will lead to longer runtime, and a smaller sigma will let you pick up smaller symmetries but might also introduce some noise). 
 
 ```bash
