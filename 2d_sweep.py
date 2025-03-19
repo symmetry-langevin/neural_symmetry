@@ -2,7 +2,6 @@ import jax
 import jax.numpy as jnp
 
 import numpy as np
-import matplotlib.pyplot as plt
 import cv2
 from functools import partial
 import torch
@@ -33,10 +32,6 @@ def hough_transform_batch_2d_change(p1, p2, eps1 = 1e-7, eps2 = 1e-2): #outputti
 
 def batch_run(args):
     data_dir = args.data_path
-    n_steps = args.n_steps
-    sigma = args.sigma
-    num_points = args.n_points
-    step_size = args.step_size
 
     #log_name = f"{data_dir}/2d_langevin-{num_points}-{n_steps}-{step_size}-{sigma}"
     #wandb.init(project="2d_langevin_sweep", name=log_name, entity="xnf")
@@ -83,21 +78,6 @@ def main(args, file_path):
     d = (d + (R * torch.sign(d))) * n
     t_pcl = np.array(d)
 
-    fig1, ax1 = plt.subplots(figsize=(6, 6))
-    ax1.scatter(t_pcl[:, 0], t_pcl[:, 1])
-    ax1.axis("equal")
-
-    grid = make_grid(res)
-    dist_val = batch_dist(grid, t_pcl, sigma=sigma, R=R, batch_size=1024)
-    valid = (jnp.linalg.norm(grid, axis=-1) > R).reshape(res, res)
-    dist_val = dist_val.reshape(res, res)
-
-    
-    fig2, ax2 = plt.subplots(figsize=(6, 6))
-    ax2.scatter(ctrs[:, 0], ctrs[:, 1])
-    ax2.contourf(grid[..., 0], grid[..., 1], dist_val, levels=10)
-    ax2.axis("equal")
-    
     key = random.PRNGKey(0)
     key, subkey = random.split(key)
 
@@ -133,39 +113,29 @@ def main(args, file_path):
 
     x_init = jnp.array(t_pcl[np.random.choice(len(t_pcl), num_points, replace=False)])
     _, aux = jax.lax.scan(partial(langevin_step, R=R, sigma=sigma), x_init, step_stats)
-    
     last = np.array(aux['xt'][-1])
     
-    fig3, ax3 = plt.subplots(figsize=(6, 6))
-    ax3.contourf(grid[..., 0], grid[..., 1], dist_val, levels=10)
-    ax3.scatter(ctrs[:, 0], ctrs[:, 1], c='r')
-    ax3.scatter(last[:, 0], last[:, 1], c='b')
-    ax3.axis("equal")
 
-
+    fpath = f"{out_dir}/{data_name}_{step_size}_{sigma}.pickle"
+    #extract clusters and result saving
+    my_labels = dbscan(last, eps=group_eps, MinPts=group_min_points)
+    centroid = compute_centroids(last, my_labels)
+    if centroid.shape[0] == 0: ##if dbscan returns 0 modes
+        with open(fpath,'wb') as f:
+            pickle.dump({"last": last, "centroid": centroid, "R": R, "theta": np.array([]), "r": np.array([]), "aux": aux}, f)
+    
+    else:
+        pt = np.array(centroid)
+        converted = convert_to_pd(pt, R)
+        with open(fpath,'wb') as f:
+            pickle.dump({"last": last, "centroid": centroid, "R": R, "theta": converted[:, 0], "r": converted[:, 1], "aux": aux}, f)
+    
     #extract clusters
     my_labels = dbscan(last, eps=group_eps, MinPts=group_min_points)
     centroid = compute_centroids(last, my_labels)
     pt = np.array(centroid)
     converted = convert_to_pd(pt, R)
-        
-    fig4, ax4 = plt.subplots(figsize=(6, 6))
-    ax4.set_xlim([-2, 2])
-    ax4.set_ylim([-2, 2])
-    ax4.scatter(ctrs[:, 0], ctrs[:, 1], c='r', s=1)
-    for i in range(len(converted)):
-        theta, d = converted[i]
-        p, d2 = parallel_line_through_point(theta, d)
-        p0 = p + -2 * d2
-        p1 = p + 2 * d2
-        ax4.plot([p0[0], p1[0]], [p0[1], p1[1]], linewidth=2, c='b')
 
-
-    # result saving
-    fpath = f"{out_dir}/{data_name}_{step_size}_{sigma}.pickle"
-    with open(fpath,'wb') as f:
-        pickle.dump({"last": last, "centroid": centroid, "R": R, "theta": converted[:, 0], "r": converted[:, 1], "aux": aux}, f)
-    
     # video logging 
     if gen_vid:
         step_bs = 400
@@ -180,15 +150,10 @@ def main(args, file_path):
         for im in image_lst:
             video_writer.write(im.astype('uint8'))
         video_writer.release()
-        wandb.log({"video": wandb.Video(video_temp_path, fps=15, format="mp4"), 'transformation space' : wandb.Image(fig1), 'density': wandb.Image(fig2), 'last_step': wandb.Image(fig3), 'symmetries': wandb.Image(fig4)})
-    else:
-        wandb.log({'transformation space' : wandb.Image(fig1), 'density': wandb.Image(fig2), 'last_step': wandb.Image(fig3), 'symmetries': wandb.Image(fig4) })
-    plt.close(fig1)
-    plt.close(fig2)
-    plt.close(fig3)
-    plt.close(fig4)
-
-
+        #wandb.log({"video": wandb.Video(video_temp_path, fps=15, format="mp4"), 'transformation space' : wandb.Image(fig1), 'density': wandb.Image(fig2), 'last_step': wandb.Image(fig3), 'symmetries': wandb.Image(fig4)})
+    #else:
+        #wandb.log({'transformation space' : wandb.Image(fig1), 'density': wandb.Image(fig2), 'last_step': wandb.Image(fig3), 'symmetries': wandb.Image(fig4) })
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--res", type=int, default=256)

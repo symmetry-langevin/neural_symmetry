@@ -54,7 +54,7 @@ def main(args):
     ns, ds = hough_vec(p1, p2)
     n_times_d = ns * (ds + np.sign(ds))[:, np.newaxis] #(n_samples, 3)  
     n_times_d= jnp.array(n_times_d)
-    to_plot = create_points_3d(n_times_d)
+    #to_plot = create_points_3d(n_times_d)
 
     #wandb.log({"hough space": plot_all_3d([to_plot])})
     #wandb.log({"density": vis_density(100, n_times_d, sigma=sigma, bs=100) })
@@ -100,7 +100,7 @@ def main(args):
     # x_init = jnp.array([[1.5, 1.5]])
     _, aux = jax.lax.scan(langevin_step, x_init, step_stats)
     xt = aux['xt']
-    index = jnp.linspace(0, len(xt)-1, 100, dtype=int)
+    #index = jnp.linspace(0, len(xt)-1, 100, dtype=int)
     #x_t = jnp.transpose(jnp.array(xt)[index], (1, 0, 2))
     
     last = xt[-1]
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     parser.add_argument("--n_steps", type=int, default=10_000)
     parser.add_argument("--n_points", type=int, default=100)
     parser.add_argument("--sigma", type=float, default=0.1)
-    parser.add_argument("--out_path", type=str, default='/hdd/jihyeonj/langevin/out/air')
-    parser.add_argument("--data_path", type=str, default='/hdd/jihyeonj/langevin/model_watertight.off')
+    parser.add_argument("--out_path", type=str, default='./temp_3d/')
+    parser.add_argument("--data_path", type=str, default='./temp_data/')
     args = parser.parse_args()
     main(args)
