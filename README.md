@@ -21,7 +21,7 @@ Modifying each of these parameters will impact the langevin walk result. We sugg
 ```bash
 # see the lits of arguments for more detail
 python 2d_sweep.py --sigma 0.15 --R 0.5 --n_steps 100_000 --n_samples 10_000 --n_points 100 --out_path OUTPUTPATH --data_path DATAPATH
-python 3d_sweep.py --sigma 0.08 --n_samples 1_000_000 --n_steps 10_000 --n_points 100 --out_path OUTPUTPATH --data_path DATAPATH
+python 3d_sweep.py --sigma 0.1 --n_samples 100_000 --n_steps 10_000 --n_points 100 --out_path OUTPUTPATH --data_path DATAPATH
 ```
 
 ## Visualization

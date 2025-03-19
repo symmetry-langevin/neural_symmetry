@@ -1,16 +1,14 @@
-import jax.numpy as jnp
-import numpy as np
 import time
-
-#all for vis
-import open3d as o3d
-import wandb
-import pickle
 import argparse
 
-from jax_utils import *
+import open3d as o3d
+import pickle
+
+import jax
+import jax.numpy as jnp
+from safe_jax_utils import *
 from jax_utils_3d import *
-from vis_utils import *
+
 
 def hough(x, y):
    n = (x-y) / jnp.linalg.norm(x - y)
@@ -35,30 +33,25 @@ def main(args):
         "sigma": jnp.ones((n_steps,)) * sigma
     }
     
-    #log_name = f"{data_name}/{num_samples}-{sigma}"
-    #wandb.init(project="symmetry-sweep", name=log_name, entity="xnf")
-    
-    
     key = random.PRNGKey(0)
     key, subkey = random.split(key)
 
+    #####
+    #LOADS POINTS  -> needs to be preprocessed
     mesh = o3d.io.read_triangle_mesh(args.data_path)
     center_of_mass = mesh.get_center()
     mesh.translate(-center_of_mass)
-    norms = np.linalg.norm(np.asarray(mesh.vertices), axis=1)
-    mesh.scale(1/np.max(norms), center=(0,0,0))
+    norms = jnp.linalg.norm(jnp.array(mesh.vertices), axis=1)
+    mesh.scale(1/jnp.max(norms), center=(0,0,0))
 
     p1 = jnp.array(mesh.sample_points_uniformly(num_samples).points)
     p2 = jnp.array(mesh.sample_points_uniformly(num_samples).points)
-
+    #### all this could be predumped
+    
     ns, ds = hough_vec(p1, p2)
-    n_times_d = ns * (ds + np.sign(ds))[:, np.newaxis] #(n_samples, 3)  
+    n_times_d = ns * (ds + jnp.sign(ds))[:, jnp.newaxis] #(n_samples, 3)  
     n_times_d= jnp.array(n_times_d)
-    #to_plot = create_points_3d(n_times_d)
 
-    #wandb.log({"hough space": plot_all_3d([to_plot])})
-    #wandb.log({"density": vis_density(100, n_times_d, sigma=sigma, bs=100) })
-    #save_pc('hough space', n_times_d)
 
     def langevin_step(x, step_stats):
         t = step_stats["t"] 
@@ -92,38 +85,20 @@ def main(args):
     x = jax.random.normal(rng1, shape=(num_points, 3))
     xd = x / safe_norm(x)
     xr = jax.random.uniform(rng2, shape=(num_points, 1)) * 0.5
-    # xr = 0
     x_init = (xr + 1) * xd
 
-    #x_endpoint, aux = batch_langevin_steps(x_init, step_stats, rng, batch_size=30)
 
-    # x_init = jnp.array([[1.5, 1.5]])
     _, aux = jax.lax.scan(langevin_step, x_init, step_stats)
     xt = aux['xt']
-    #index = jnp.linspace(0, len(xt)-1, 100, dtype=int)
-    #x_t = jnp.transpose(jnp.array(xt)[index], (1, 0, 2))
-    
     last = xt[-1]
-    #my_labels = dbscan(last, eps=0.1, MinPts=2) #TODO:this has to be tuned!
-    #centroid = compute_centroids(last, my_labels)
-    #centroids = np.array(centroid)
-    #print("total number of modes found: " + str(len(centroids)))
-    
-    #all_points = create_points_3d(p1, alpha = 0.05, label = 'primal')
-    #hough = create_points_3d(n_times_d, alpha = 0.05, label = 'dual')
-    #start = create_points_3d(xt[0], alpha = 1, label = 'initial timestep')
-    #end = create_points_3d(xt[-1], alpha = 1, markersize = 4, label = 'final timestep')
-
-    
-    #wandb.log({"langevin": plot_all_3d([hough, start, end], grid = False)})
+    #dumping the outputs
     fpath = f"{args.out_path}/{data_name}_{num_samples}_{sigma}_modes.pickle"
     with open(fpath,'wb') as f:
         pickle.dump(last, f)
-    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--n_samples", type=int, default=50_000)
+    parser.add_argument("--n_samples", type=int, default=100_000)
     parser.add_argument("--n_steps", type=int, default=10_000)
     parser.add_argument("--n_points", type=int, default=100)
     parser.add_argument("--sigma", type=float, default=0.1)
