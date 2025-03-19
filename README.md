@@ -3,7 +3,7 @@
 > #### Authors &emsp;&emsp; [Jihyeon Je](https://jihyeonje.com/)<sup>1*</sup>, [Jiayi Liu]()<sup>1*</sup>, [Guandao Yang](https://www.guandaoyang.com/)<sup>1*</sup>, [Boyang Deng](https://boyangdeng.com/)<sup>1*</sup>, [Shengqu Cai](https://primecai.github.io/)<sup>1</sup>, [Gordon Wetzstein](https://stanford.edu/~gordonwz/)<sup>1</sup>, [Or Litany](https://orlitany.github.io/)<sup>2</sup>, [Leonidas Guibas](https://geometry.stanford.edu/)<sup>1</sup> <br> <sub> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <sup>1</sup>Stanford University, <sup>2</sup>Technion </sub><br><br>
 
 
-<img src="/Users/jihyeonje/Desktop/neural-symmetry-main 2/sample_figures/lang.png">
+<img src="sample_figures/lang.png">
 
 ## Setup
 First, download and set up the repo:
@@ -29,7 +29,7 @@ python 3d_sweep.py --sigma [0.1,0.08,0.05,0.03] --n_samples 1_000_000 --n_steps 
 python 2d_langevin.py --data_path ./temp_test/shapes --out_path ./temp_test/output --num_runs 1 --num_skip 0 --gen_vid True --step_size 0.06 --sigma 0.025
 python 3d_sweep.py --sigma 0.08 --n_samples 1_000_000 --n_steps 10_000 --output OUTPUTPATH --data_path DATAPATH
 ```
-<img src="/Users/jihyeonje/Desktop/neural-symmetry-main 2/sample_figures/traj.gif">
+<img src="sample_figures/traj.gif">
 
 ## Running Blender visualization
 If you want to visualize the output of the Langevin dynamics, please see the visualization notebook:
