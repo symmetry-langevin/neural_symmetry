@@ -11,8 +11,12 @@ First, download and set up the repo:
 git clone https://github.com/symmetry-langevin/neural_symmetry.git
 cd neural_symmetry
 ```
-You will also need to install Jax, open3d, trimesh, as well as Blender for visualization.
 
+You will also need to install Jax, open3d, trimesh, as well as Blender for visualization.
+```
+pip install -U "jax[cuda12]"
+pip install open3d
+```
 
 
 ## Running Langevin dynamics 
