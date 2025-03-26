@@ -6,7 +6,7 @@ import pickle
 
 import jax
 import jax.numpy as jnp
-from safe_jax_utils import *
+from jax_utils import *
 from jax_utils_3d import *
 
 
